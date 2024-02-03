@@ -1,8 +1,9 @@
+import os
 import math
-from PIL import Image
 import requests
-from io import BytesIO
 from os import path
+from PIL import Image
+from io import BytesIO
 
 
 ratings=['A+','A','A-','B+','B','B-','C+','C','C-','D+','D','D-','F','SB']
@@ -12,13 +13,19 @@ end_format_csv='EndSeasonTiers.csv'
 
 start_file = open(f'{working_dir}/{start_format_csv}', 'r')
 start_dict = {}
+
+if not path.exists(f'{working_dir}/images'):
+    os.makedirs(f'{working_dir}/images')
+if not path.exists(f'{working_dir}/compareResults/'):
+    os.makedirs(f'{working_dir}/compareResults/')
+
 for line in start_file:
     card_name = line.split(',')[0]
     if line[0] == "\"":
         card_name = line.split('"')[1]
         line = line.split('"')[2]
     start_dict[card_name] = line.split(',')[4]
-    if path.exists(f'{working_dir}/images/{card_name}.jpg') == False:
+    if not path.exists(f'{working_dir}/images/{card_name}.jpg'):
         response = requests.get(line.split(',')[8])
         img = Image.open(BytesIO(response.content))
         img.save(f'{working_dir}/images/{card_name}.jpg')
